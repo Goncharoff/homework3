@@ -12,6 +12,7 @@ public class Multiply implements Expression {
     }
 
     public double interpret() {
-        return right.interpret() - left.interpret();
+
+        return right.interpret() * left.interpret();
     }
 }

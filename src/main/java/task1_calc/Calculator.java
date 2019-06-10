@@ -1,121 +1,56 @@
 package task1_calc;
 
+import static task1_calc.Parser.infixToPostfix;
+
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.function.BiFunction;
+import task1_calc.leafs.Division;
 import task1_calc.leafs.Minus;
+import task1_calc.leafs.Multiply;
 import task1_calc.leafs.Number;
 import task1_calc.leafs.Plus;
 
-import java.util.Stack;
+class Calculator {
+  private String inputExpression;
 
-public class Calculator {
-    String inputExpression;
-
-    public double calculate(String expression) {
-        Stack<Expression> stack = new Stack<Expression>();
-        double result = 0;
-
-        for (String token : infixToPostfix(expression).split("")) {
-
-            if (isOperator(token)) {
-                Expression exp = null;
-                if (token.equals("+")) {
-                    exp = stack.push(new Plus(stack.pop(), stack.pop()));
-                } else if (token.equals("-")) {
-                    exp = stack.push(new Minus(stack.pop(), stack.pop()));
-                }
-
-                if (exp != null) {
-                    result = exp.interpret();
-                    stack.push(new Number(result));
-                }
-            }
+  Calculator(String inputExpression) {
+    this.inputExpression = inputExpression;
+  }
 
 
-            if (isNumber(token)) {
-                stack.push(new Number(Double.parseDouble(token)));
-            }
+  Double calculate() {
+    String input = infixToPostfix(inputExpression);
+    Deque<Expression> numbers = new ArrayDeque<>();
+
+    Arrays.stream(input.split(" ")).forEach(number -> {
+      switch (number) {
+        case "+":
+          calcSign(numbers, (n1, n2) -> new Plus(n1, n2).interpret());
+          break;
+        case "-":
+          calcSign(numbers, (n1, n2) -> new Minus(n1, n2).interpret());
+          break;
+        case "*":
+          calcSign(numbers, (n1, n2) -> new Multiply(n1, n2).interpret());
+          break;
+        case "/":
+          calcSign(numbers, (n1, n2) -> new Division(n1, n2).interpret());
+          break;
+        default:
+          numbers.push(new Number(Double.parseDouble(number)));
+      }
+    });
+
+    return numbers.pop().interpret();
+  }
+
+  private void calcSign(Deque<Expression> numbers, BiFunction<Expression, Expression, Double> operation) {
+    numbers.push(new Number(operation.apply(numbers.pop(), numbers.pop())));
+  }
 
 
-        }
-
-        return result;
-    }
-
-
-    public String infixToPostfix(String exp) {
-        // initializing empty String for result
-        String result = "";
-
-        // initializing empty stack
-        Stack<Character> stack = new Stack<Character>();
-
-        for (int i = 0; i < exp.length(); ++i) {
-            char c = exp.charAt(i);
-
-            // If the scanned character is an operand, add it to output.
-            if (Character.isLetterOrDigit(c))
-                result += c;
-
-                // If the scanned character is an '(', push it to the stack.
-            else if (c == '(')
-                stack.push(c);
-
-                //  If the scanned character is an ')', pop and output from the stack
-                // until an '(' is encountered.
-            else if (c == ')') {
-                while (!stack.isEmpty() && stack.peek() != '(')
-                    result += stack.pop();
-
-                if (!stack.isEmpty() && stack.peek() != '(')
-                    return "Invalid Expression"; // invalid expression
-                else
-                    stack.pop();
-            } else // an operator is encountered
-            {
-                while (!stack.isEmpty() && Prec(c) <= Prec(stack.peek())) {
-                    if (stack.peek() == '(')
-                        return "Invalid Expression";
-                    result += stack.pop();
-                }
-                stack.push(c);
-            }
-
-        }
-
-        // pop all the operators from the stack
-        while (!stack.isEmpty()) {
-            if (stack.peek() == '(')
-                return "Invalid Expression";
-            result += stack.pop();
-        }
-        return result;
-    }
-
-    static int Prec(char ch) {
-        switch (ch) {
-            case '+':
-            case '-':
-                return 1;
-
-            case '*':
-            case '/':
-                return 2;
-
-            case '^':
-                return 3;
-        }
-        return -1;
-    }
-
-    private boolean isOperator(String token) {
-        return token.equals("+") || token.equals("-");
-    }
-
-    private boolean isNumber(String token) {
-        try {
-            Double.parseDouble(token);
-            return true;
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-    }
 }
