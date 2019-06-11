@@ -9,7 +9,8 @@ public class Number implements Expression {
         this.number = number;
     }
 
-    public double interpret() {
+    @Override
+    public double calculate() {
         return number;
     }
 }

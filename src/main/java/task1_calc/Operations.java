@@ -36,7 +36,7 @@ public enum Operations {
       return 4;
     }
   },
-  SUBTRACTION("/") {
+  DIVISION("/") {
     @Override
     public int getPriorityNumber() {
       return 4;
@@ -61,14 +61,16 @@ public enum Operations {
     return operation;
   }
 
-  public static int getOperationPriorityBySymbol(String operation) {
-    return lookup.get(operation).getPriorityNumber();
+  public static int getOperationPriorityBySymbol(String operation) throws NullPointerException {
+    return getOperationBySymbol(operation).getPriorityNumber();
+  }
+
+  public static Operations getOperationBySymbol(String operation) {
+    return lookup.get(operation);
   }
 
   public int getPriorityNumber() {
     return -1;
   }
-
-
 
 }

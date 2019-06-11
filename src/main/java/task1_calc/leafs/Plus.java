@@ -3,15 +3,16 @@ package task1_calc.leafs;
 import task1_calc.Expression;
 
 public class Plus implements Expression {
-  Expression left;
-  Expression right;
+  private Expression left;
+  private Expression right;
 
   public Plus(Expression left, Expression right) {
     this.left = left;
     this.right = right;
   }
 
-  public  double interpret() {
-    return left.interpret() + right.interpret();
+  @Override
+  public  double calculate() {
+    return left.calculate() + right.calculate();
   }
 }

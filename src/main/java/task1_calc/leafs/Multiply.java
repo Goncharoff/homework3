@@ -3,16 +3,18 @@ package task1_calc.leafs;
 import task1_calc.Expression;
 
 public class Multiply implements Expression {
-    Expression left;
-    Expression right;
+    private Expression left;
+    private Expression right;
+
 
     public Multiply(Expression left, Expression right) {
         this.left = left;
         this.right = right;
     }
 
-    public double interpret() {
+    @Override
+    public double calculate() {
 
-        return right.interpret() * left.interpret();
+        return right.calculate() * left.calculate();
     }
 }

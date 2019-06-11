@@ -2,6 +2,7 @@ package task1_calc;
 
 import static task1_calc.Parser.infixToPostfix;
 
+import java.security.cert.Extension;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -14,7 +15,8 @@ import task1_calc.leafs.Multiply;
 import task1_calc.leafs.Number;
 import task1_calc.leafs.Plus;
 
-class Calculator {
+class Calculator implements Expression {
+
   private String inputExpression;
 
   Calculator(String inputExpression) {
@@ -22,35 +24,62 @@ class Calculator {
   }
 
 
-  Double calculate() {
+  @Override
+  public double calculate() {
     String input = infixToPostfix(inputExpression);
-    Deque<Expression> numbers = new ArrayDeque<>();
+    Deque<Expression> expressionsStack = new ArrayDeque<>();
 
-    Arrays.stream(input.split(" ")).forEach(number -> {
-      switch (number) {
-        case "+":
-          calcSign(numbers, (n1, n2) -> new Plus(n1, n2).interpret());
-          break;
-        case "-":
-          calcSign(numbers, (n1, n2) -> new Minus(n1, n2).interpret());
-          break;
-        case "*":
-          calcSign(numbers, (n1, n2) -> new Multiply(n1, n2).interpret());
-          break;
-        case "/":
-          calcSign(numbers, (n1, n2) -> new Division(n1, n2).interpret());
-          break;
-        default:
-          numbers.push(new Number(Double.parseDouble(number)));
-      }
-    });
+    Arrays.stream(input.split(" "))
+            .forEach(expression -> expressionsStack.push(getExpressionFromInputStringOperator(expressionsStack, expression)));
 
-    return numbers.pop().interpret();
+    return expressionsStack.pop().calculate();
   }
 
-  private void calcSign(Deque<Expression> numbers, BiFunction<Expression, Expression, Double> operation) {
-    numbers.push(new Number(operation.apply(numbers.pop(), numbers.pop())));
+  /**
+   * Method for returning number expression or result of expression calculating
+   *
+   * @param expressions - stack of expressions
+   * @param expression  - expression as string
+   * @return result expression
+   */
+  private Expression getExpressionFromInputStringOperator(Deque<Expression> expressions, String expression) {
+    return isNumber(expression) ? getNumberExpression(expression) : getSignOperationResult(expressions, expression);
   }
 
+  /**
+   * Get result from expression operations
+   *
+   * @param expressions stack of expressions
+   * @param expression  expression as string
+   * @return result of calculating expression
+   */
+  private Expression getSignOperationResult(Deque<Expression> expressions, String expression) {
+    Operations operation = Operations.getOperationBySymbol(expression);
+    return ExpressionFactory.getExpression(operation, expressions.poll(), expressions.poll());
+  }
 
+  /**
+   * Returns number from expression
+   *
+   * @param expression as string
+   * @return number in double format
+   */
+  private Expression getNumberExpression(String expression) {
+    return new Number(Double.parseDouble(expression));
+  }
+
+  /**
+   * Check if input string is number
+   *
+   * @param token - string input symbol
+   * @return true if number, else - false
+   */
+  private boolean isNumber(String token) {
+    try {
+      Double.parseDouble(token);
+      return true;
+    } catch (NumberFormatException ex) {
+      return false;
+    }
+  }
 }
