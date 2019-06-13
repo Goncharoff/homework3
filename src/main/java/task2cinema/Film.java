@@ -1,16 +1,9 @@
 package task2cinema;
 
-abstract public class Film {
-  String name;
-  Languages voiceLanguage;
-  Languages subtitlesLanguage;
-
-  public Film(String name, Languages voiceLanguage) {
-    this.name = name;
-    this.voiceLanguage = voiceLanguage;
-    this.subtitlesLanguage = voiceLanguage;
-  }
-
+public class Film {
+  private String name;
+  private Languages voiceLanguage;
+  private Languages subtitlesLanguage;
 
   public Film(String name, Languages voiceLanguage, Languages subtitlesLanguage) {
     this.name = name;
@@ -42,4 +35,12 @@ abstract public class Film {
     this.subtitlesLanguage = subtitlesLanguage;
   }
 
+  @Override
+  public String toString() {
+    return "Film{" +
+            "name='" + name + '\'' +
+            ", voiceLanguage=" + voiceLanguage +
+            ", subtitlesLanguage=" + subtitlesLanguage +
+            '}';
+  }
 }
