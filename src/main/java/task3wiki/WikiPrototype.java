@@ -6,21 +6,29 @@ import java.util.Deque;
 public class WikiPrototype implements Cloneable {
   private Deque<String> articleText;
 
-  WikiPrototype(String inputText, long timestamp) {
+  WikiPrototype(String inputText) {
     articleText = new ArrayDeque<>();
-    articleText.add(inputText + " with timestamp " + timestamp);
+    articleText.add(inputText);
   }
 
   private WikiPrototype(Deque<String> savedArticleText) {
     articleText = savedArticleText;
   }
 
-  void changeArticleText(String newArticleText) {
-    articleText.add(" + " + newArticleText);
+  void addTextToArticle(String newArticleText) {
+    articleText.add(articleText.peekLast() + newArticleText);
+  }
+
+  void rewriteArticleText(String newArticleText) {
+    articleText.add(newArticleText);
   }
 
   void printArticle() {
-    System.out.println(articleText);
+    System.out.println();
+    System.out.println("============= Last version of article text =======================");
+    System.out.println(articleText.peekLast());
+    System.out.println("==================================================");
+    System.out.println();
   }
 
   void removeLast() {
@@ -33,8 +41,6 @@ public class WikiPrototype implements Cloneable {
 
   @Override
   public WikiPrototype clone() throws CloneNotSupportedException {
-    Deque<String> tmp = new ArrayDeque<>(this.getArticleTextHistory());
-
-    return new WikiPrototype(tmp);
+    return new WikiPrototype(new ArrayDeque<>(this.getArticleTextHistory()));
   }
 }

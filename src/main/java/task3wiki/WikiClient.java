@@ -5,24 +5,25 @@ import java.util.Date;
 public class WikiClient {
 
   public static void main(String[] args) throws CloneNotSupportedException {
-    WikiPrototype javaArticle = new WikiPrototype("This is old  text for Java 1.5", new Date().getTime());
+    WikiPrototype javaArticle = new WikiPrototype("This is old  text for Java 1.5");
 
-    WikiPrototype newJavaArticle = javaArticle.clone();
-    newJavaArticle.changeArticleText("Java 12 yeah!");
-
-    WikiPrototype evenNewerJavaArticle = newJavaArticle.clone();
-    evenNewerJavaArticle.changeArticleText("Java 12 is under new licence!");
 
     System.out.println("init article");
     javaArticle.printArticle();
-    System.out.println("new article ");
-    newJavaArticle.printArticle();
-    System.out.println("newer article");
-    evenNewerJavaArticle.printArticle();
+    System.out.println("new article -- text addition ");
+    javaArticle.addTextToArticle(" Oh java 12 available!");
+    javaArticle.printArticle();
+    System.out.println("newer article -- all text changed");
+    javaArticle.rewriteArticleText(" Under new license! =(");
+    javaArticle.printArticle();
 
     System.out.println("after removing");
-    evenNewerJavaArticle.removeLast();
-    evenNewerJavaArticle.printArticle();
+    javaArticle.removeLast();
+    javaArticle.printArticle();
+
+    System.out.println("Removing again!");
+    javaArticle.removeLast();
+    javaArticle.printArticle();
 
   }
 }
